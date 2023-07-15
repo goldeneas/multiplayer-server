@@ -1,0 +1,11 @@
+Ecco le regole da seguire:
+- ordine degli elementi dichiarati nell'header di una classe
+	- public typedefs/using
+	- private member variables
+	- public member variables
+	- public ctors
+	- private ctors
+	- public functions
+	- private functions
+- le interfacce (classi che implementano almeno una funzione pure virtual) devono avere
+	il nome che inizia con una I (i maiuscola)
