@@ -140,7 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\multiplayer-zelda-clone\EventBus.cpp" />
+    <ClCompile Include="EventBus.cpp" />
     <ClCompile Include="NetworkServer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PacketProcessor.cpp" />

@@ -54,7 +54,7 @@
     <ClCompile Include="PacketProcessor.cpp">
       <Filter>Source Files\packets</Filter>
     </ClCompile>
-    <ClCompile Include="..\multiplayer-zelda-clone\EventBus.cpp">
+    <ClCompile Include="EventBus.cpp">
       <Filter>Source Files\events</Filter>
     </ClCompile>
   </ItemGroup>

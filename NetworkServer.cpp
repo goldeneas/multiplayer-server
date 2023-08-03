@@ -24,6 +24,36 @@ void NetworkServer::poll() {
 	}
 }
 
+void NetworkServer::processNewConnections() {
+	if(!selector.isReady(tcpListener))
+		return;
+
+	if(connectionStack.size() >= connectionStack.maxSize()) {
+		spdlog::warn("Maximum number of clients has been reached. Closing new connection");
+		return;
+	}
+
+	ClientConnection::Pointer connection = std::make_unique<ClientConnection>();
+	ClientConnection::ID connectionId = connection->getId();
+	sf::TcpSocket& socket = connection->getSocket();
+
+	if(tcpListener.accept(socket) != sf::Socket::Done) {
+		spdlog::error("Something went wrong while trying to accept new connection!");
+		return;
+	}
+
+	// handle connection
+	selector.add(socket);
+	connectionStack.add(std::move(connection));
+	EventBus::emit<C2SConnection>(connectionId);
+
+	spdlog::info("A client [ID: {}] has connected successfully", connectionId);
+
+	// broadcast new connection
+	spdlog::debug("Broadcasting new connection [ID: {}] to connected clients", connectionId);
+	broadcastNewConnection(connectionId);
+}
+
 void NetworkServer::processIncomingPackets() {
 	auto& connections = connectionStack.getConnections();
 
@@ -64,41 +94,21 @@ void NetworkServer::processIncomingPackets() {
 	}
 }
 
-void NetworkServer::processNewConnections() {
-	if(!selector.isReady(tcpListener))
-		return;
-
-	if(connectionStack.size() >= connectionStack.maxSize()) {
-		spdlog::warn("Maximum number of clients has been reached. Closing new connection");
-		return;
-	}
-
-	ClientConnection::Pointer connection		= std::make_unique<ClientConnection>();
-	ClientConnection::ID connectionId			= connection->getId();
-	sf::TcpSocket& socket						= connection->getSocket();
-
-	if(tcpListener.accept(socket) != sf::Socket::Done) {
-		spdlog::error("Something went wrong while trying to accept new connection!");
-		return;
-	}
-
-	// handle connection
-	selector.add(socket);
-	connectionStack.add(std::move(connection));
-	EventBus::emit<C2SConnection>(connectionId);
-
-	spdlog::info("A client [ID: {}] has connected successfully", connectionId);
-
-	// broadcast new connection
-	spdlog::debug("Broadcasting new connection [ID: {}] to connected clients", connectionId);
-	broadcastNewConnection(connectionId);
-}
-
 void NetworkServer::broadcastNewConnection(ClientConnection::ID id) {
-	// TODO implement packet
-	sf::Packet p = PacketBuilder::build(PacketType::S2C_NEW_CLIENT);
-
+	// broadcast new connection to others
+	sf::Packet p = PacketBuilder::build(PacketType::S2C_NEW_CLIENT, id);
 	broadcastExcept(id, p);
+
+	// tell new client who's connected
+	for(auto& connection : connectionStack.getConnections()) {
+		ClientConnection::ID otherId = connection->getId();
+
+		if(id == otherId)
+			continue;
+
+		sf::Packet p = PacketBuilder::build(PacketType::S2C_NEW_CLIENT, otherId);
+		send(id, p);
+	}
 }
 
 void NetworkServer::send(ClientConnection::ID id, sf::Packet& p) {

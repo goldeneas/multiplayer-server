@@ -25,5 +25,4 @@ struct C2SPacketPreprocess {
 
 struct C2SHeartbeatPacket {
 	ClientConnection::ID connectionId;
-	sf::Packet& packet;
 };

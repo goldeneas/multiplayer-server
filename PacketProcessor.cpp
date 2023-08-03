@@ -8,7 +8,7 @@ PacketType PacketProcessor::process(sf::Packet& packet, ClientConnection::ID id)
 	switch(type)
 	{
 		case PacketType::C2S_HEARTBEAT:
-			EventBus::emit<C2SHeartbeatPacket>(id, packet);
+			EventBus::emit<C2SHeartbeatPacket>(id);
 			break;
 
 		default:
