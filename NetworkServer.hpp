@@ -18,13 +18,13 @@ public:
 
 	void poll();
 
-	void send(ClientConnection::ID id, sf::Packet& p);
+	void send(Client::ID id, sf::Packet& p);
 	void broadcast(sf::Packet& p);
-	void broadcastExcept(ClientConnection::ID id, sf::Packet& p);
-	void disconnectClient(ClientConnection::ID id);
+	void broadcastExcept(Client::ID id, sf::Packet& p);
+	void disconnectClient(Client::ID id);
 private:
 	void processNewConnections();
 	void processIncomingPackets();
-	void broadcastNewConnection(ClientConnection::ID id);
-	void disconnectClient(ClientConnection::ID id, bool removeFromConnections);
+	void broadcastNewConnection(Client::ID id);
+	void disconnectClient(Client::ID id, bool removeFromConnections);
 };

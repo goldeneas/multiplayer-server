@@ -146,7 +146,7 @@
     <ClCompile Include="PacketProcessor.cpp" />
     <ClCompile Include="PacketType.cpp" />
     <ClCompile Include="HeartbeatListener.cpp" />
-    <ClCompile Include="ClientConnection.cpp" />
+    <ClCompile Include="Client.cpp" />
     <ClCompile Include="ConnectionStack.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -158,7 +158,7 @@
     <ClInclude Include="PacketProcessor.hpp" />
     <ClInclude Include="PacketType.hpp" />
     <ClInclude Include="HeartbeatListener.hpp" />
-    <ClInclude Include="ClientConnection.hpp" />
+    <ClInclude Include="Client.hpp" />
     <ClInclude Include="ConnectionStack.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

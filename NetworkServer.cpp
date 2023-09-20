@@ -33,8 +33,8 @@ void NetworkServer::processNewConnections() {
 		return;
 	}
 
-	ClientConnection::Pointer connection = std::make_unique<ClientConnection>();
-	ClientConnection::ID connectionId = connection->getId();
+	Client::Pointer connection = std::make_unique<Client>();
+	Client::ID clientId = connection->getId();
 	sf::TcpSocket& socket = connection->getSocket();
 
 	if(tcpListener.accept(socket) != sf::Socket::Done) {
@@ -45,13 +45,13 @@ void NetworkServer::processNewConnections() {
 	// handle connection
 	selector.add(socket);
 	connectionStack.add(std::move(connection));
-	EventBus::emit<C2SConnection>(connectionId);
+	EventBus::emit<C2SConnection>(clientId);
 
-	spdlog::info("A client [ID: {}] has connected successfully", connectionId);
+	spdlog::info("A client [ID: {}] has connected successfully", clientId);
 
 	// broadcast new connection
-	spdlog::debug("Broadcasting new connection [ID: {}] to connected clients", connectionId);
-	broadcastNewConnection(connectionId);
+	spdlog::debug("Broadcasting new connection [ID: {}] to connected clients", clientId);
+	broadcastNewConnection(clientId);
 }
 
 void NetworkServer::processIncomingPackets() {
@@ -60,7 +60,7 @@ void NetworkServer::processIncomingPackets() {
 	for(auto it = connections.begin(); it != connections.end();) {
 		auto connection = it->get();
 
-		ClientConnection::ID connectionId = connection->getId();
+		Client::ID clientId = connection->getId();
 		sf::TcpSocket& socket = connection->getSocket();
 
 		if(!selector.isReady(socket))
@@ -72,17 +72,17 @@ void NetworkServer::processIncomingPackets() {
 		switch(socket.receive(p)) {
 			case sf::Socket::Done: {
 				// first, emit general "packet received" event
-				EventBus::emit<C2SPacketPreprocess>(connectionId, p);
+				EventBus::emit<C2SPacketPreprocess>(clientId, p);
 				// then, process the packet and emit correct, specific event
-				PacketType t = PacketProcessor::process(p, connectionId);
-				spdlog::debug("A client [ID: {}] sent packet [TYPE: {}]", connectionId, static_cast<int>(t));
+				PacketType t = PacketProcessor::process(p, clientId);
+				spdlog::debug("A client [ID: {}] sent packet [TYPE: {}]", clientId, static_cast<int>(t));
 				break;
 			}
 
 			case sf::Socket::Disconnected:
 				hasClientDisconnected = true;
-				disconnectClient(connectionId, false);
-				spdlog::info("A client [ID: {}] has disconnected", connectionId);
+				disconnectClient(clientId, false);
+				spdlog::info("A client [ID: {}] has disconnected", clientId);
 				break;
 
 			default:
@@ -94,14 +94,14 @@ void NetworkServer::processIncomingPackets() {
 	}
 }
 
-void NetworkServer::broadcastNewConnection(ClientConnection::ID id) {
+void NetworkServer::broadcastNewConnection(Client::ID id) {
 	// broadcast new connection to others
 	sf::Packet p = PacketBuilder::build(PacketType::S2C_NEW_CLIENT, id);
 	broadcastExcept(id, p);
 
 	// tell new client who's connected
 	for(auto& connection : connectionStack.getConnections()) {
-		ClientConnection::ID otherId = connection->getId();
+		Client::ID otherId = connection->getId();
 
 		if(id == otherId)
 			continue;
@@ -111,7 +111,7 @@ void NetworkServer::broadcastNewConnection(ClientConnection::ID id) {
 	}
 }
 
-void NetworkServer::send(ClientConnection::ID id, sf::Packet& p) {
+void NetworkServer::send(Client::ID id, sf::Packet& p) {
 	auto& connection = connectionStack.getConnection(id);
 	auto& socket = connection.getSocket();
 
@@ -124,13 +124,13 @@ void NetworkServer::send(ClientConnection::ID id, sf::Packet& p) {
 }
 
 void NetworkServer::broadcast(sf::Packet& p) {
-	for(ClientConnection::Pointer& c : connectionStack.getConnections())
+	for(Client::Pointer& c : connectionStack.getConnections())
 		send(c->getId(), p);
 }
 
-void NetworkServer::broadcastExcept(ClientConnection::ID excludeId, sf::Packet& p) {
-	for(ClientConnection::Pointer& c : connectionStack.getConnections()) {
-		ClientConnection::ID currentId = c->getId();
+void NetworkServer::broadcastExcept(Client::ID excludeId, sf::Packet& p) {
+	for(Client::Pointer& c : connectionStack.getConnections()) {
+		Client::ID currentId = c->getId();
 
 		if(currentId == excludeId)
 			continue;
@@ -139,11 +139,11 @@ void NetworkServer::broadcastExcept(ClientConnection::ID excludeId, sf::Packet& 
 	}
 }
 
-void NetworkServer::disconnectClient(ClientConnection::ID id) {
+void NetworkServer::disconnectClient(Client::ID id) {
 	disconnectClient(id, true);
 }
 
-void NetworkServer::disconnectClient(ClientConnection::ID id, bool removeFromConnections) {
+void NetworkServer::disconnectClient(Client::ID id, bool removeFromConnections) {
 	auto& connection = connectionStack.getConnection(id);
 	auto& socket = connection.getSocket();
 

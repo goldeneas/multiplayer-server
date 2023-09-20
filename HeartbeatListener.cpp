@@ -2,15 +2,15 @@
 #include <spdlog/spdlog.h>
 
 void HeartbeatListener::handle(C2SConnection e) {
-	beats.emplace(e.connectionId, 0);
+	beats.emplace(e.clientId, 0);
 }
 
 void HeartbeatListener::handle(C2SHeartbeatPacket e) {
-	beats[e.connectionId] = 0;
+	beats[e.clientId] = 0;
 }
 
 void HeartbeatListener::handle(C2SDisconnection e) {
-	auto& id = e.connectionId;
+	auto& id = e.clientId;
 
 	std::erase_if(beats, [id](auto& beat) {
 		auto const& [currentId, currentTime] = beat;

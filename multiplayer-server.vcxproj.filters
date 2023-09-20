@@ -42,7 +42,7 @@
     <ClCompile Include="NetworkServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ClientConnection.cpp">
+    <ClCompile Include="Client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HeartbeatListener.cpp">
@@ -62,7 +62,7 @@
     <ClInclude Include="ConnectionStack.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ClientConnection.hpp">
+    <ClInclude Include="Client.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NetworkServer.hpp">

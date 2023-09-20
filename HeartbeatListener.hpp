@@ -9,7 +9,7 @@ private:
 	const float MAX_NO_REPLY_TIME = 60;
 private:
 	NetworkServer& server;
-	std::unordered_map<ClientConnection::ID, TimeSinceLastBeat> beats;
+	std::unordered_map<Client::ID, TimeSinceLastBeat> beats;
 public:
 	HeartbeatListener(NetworkServer& server) : server(server) {};
 public:
