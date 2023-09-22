@@ -10,11 +10,14 @@ public:
 private:
 	static inline ID nextFreeId = 0;
 
-	sf::TcpSocket socket;
 	Client::ID id;
+    unsigned short port;
+	sf::IpAddress address;
 public:
-	Client();
+	Client(sf::IpAddress address, unsigned short port)
+        : address(address), port(port), id(nextFreeId) { ++nextFreeId; };
 
-	auto& getSocket() { return socket; }
-	Client::ID getId() const { return id; }
+	[[nodiscard]] Client::ID getId() const { return id; }
+    [[nodiscard]] unsigned short getPort() const { return port; }
+    [[nodiscard]] sf::IpAddress getAddress() const { return address; }
 };

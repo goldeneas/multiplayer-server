@@ -25,10 +25,9 @@ link_directories(
 )
 
 add_executable(multiplayer_server
-        Client.cpp
         Client.hpp
-        ConnectionStack.cpp
-        ConnectionStack.hpp
+        ClientStack.cpp
+        ClientStack.hpp
         EventBus.cpp
         EventBus.hpp
         Events.hpp
@@ -38,11 +37,11 @@ add_executable(multiplayer_server
         main.cpp
         NetworkServer.cpp
         NetworkServer.hpp
-        PacketBuilder.hpp
         PacketProcessor.cpp
         PacketProcessor.hpp
         PacketType.cpp
         PacketType.hpp
+        PacketWrapper.hpp
 )
 
 target_link_libraries(multiplayer_server

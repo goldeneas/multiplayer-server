@@ -7,12 +7,13 @@ class IEventListener {
 public:
 	using Pointer = std::unique_ptr<IEventListener>;
 public:
-	virtual ~IEventListener() {}
+	virtual ~IEventListener() = default;
 
-	virtual void handle(S2STick e)				{};
-	virtual void handle(C2SHeartbeatPacket e)		{};
-	virtual void handle(C2SConnection e)		{};
-	virtual void handle(C2SDisconnection e)		{};
-	virtual void handle(C2SPacketPreprocess e)	{};
-	virtual void handle(S2CPacketPreprocess e)	{};
+    virtual void handle(Tick e)	{};
+    virtual void handle(ClientLeft e) {};
+    virtual void handle(ClientRefused e) {};
+    virtual void handle(ClientAccepted e) {};
+    virtual void handle(IncomingClientHandshake e)	{};
+    virtual void handle(IncomingClientHeartbeat e)	{};
+    virtual void handle(IncomingPacketPreprocess e)	{};
 };

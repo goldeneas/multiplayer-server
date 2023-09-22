@@ -11,10 +11,10 @@ private:
 	NetworkServer& server;
 	std::unordered_map<Client::ID, TimeSinceLastBeat> beats;
 public:
-	HeartbeatListener(NetworkServer& server) : server(server) {};
+	explicit HeartbeatListener(NetworkServer& server) : server(server) {};
 public:
-	void handle(S2STick e) override;
-	void handle(C2SConnection e) override;
-	void handle(C2SDisconnection e) override;
-	void handle(C2SHeartbeatPacket e) override;
+	void handle(Tick e) override;
+	void handle(ClientLeft e) override;
+	void handle(ClientAccepted e) override;
+	void handle(IncomingClientHeartbeat e) override;
 };

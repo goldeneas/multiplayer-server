@@ -2,10 +2,10 @@
 #include "EventBus.hpp"
 #include "HeartbeatListener.hpp"
 #include "NetworkServer.hpp"
-#include "ConnectionStack.hpp"
+#include "ClientStack.hpp"
 
 int main() {
-	ConnectionStack connectionStack(20);
+	ClientStack connectionStack(20);
 	NetworkServer server(connectionStack, 39964);
 
 	spdlog::set_level(spdlog::level::debug);
@@ -17,7 +17,7 @@ int main() {
 		sf::Time dt = clock.restart();
 
 		server.poll();
-		EventBus::emit<S2STick>(dt.asSeconds());
+		EventBus::emit<Tick>(dt.asSeconds());
 	}
 
 	return 0;

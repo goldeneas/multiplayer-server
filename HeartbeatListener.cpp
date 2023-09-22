@@ -1,25 +1,25 @@
 #include "HeartbeatListener.hpp"
 #include <spdlog/spdlog.h>
 
-void HeartbeatListener::handle(C2SConnection e) {
-	beats.emplace(e.clientId, 0);
+void HeartbeatListener::handle(ClientAccepted e) {
+	beats.emplace(e.assignedId, 0);
 }
 
-void HeartbeatListener::handle(C2SHeartbeatPacket e) {
+void HeartbeatListener::handle(IncomingClientHeartbeat e) {
 	beats[e.clientId] = 0;
 }
 
-void HeartbeatListener::handle(C2SDisconnection e) {
-	auto& id = e.clientId;
+void HeartbeatListener::handle(ClientLeft e) {
+	Client::ID id = e.clientId;
 
-	std::erase_if(beats, [id](auto& beat) {
-		auto const& [currentId, currentTime] = beat;
-		return id == currentId; }
-	);
+	std::erase_if(beats, [id](auto& heartbeat) {
+		auto const& [currentId, currentTime] = heartbeat;
+		return id == currentId;
+    });
 }
 
-void HeartbeatListener::handle(S2STick e) {
-	auto elapsed = e.dt;
+void HeartbeatListener::handle(Tick e) {
+	float elapsed = e.dt;
 
 	for(auto it = beats.begin(); it != beats.end();) {
 		auto& time			= it->second;

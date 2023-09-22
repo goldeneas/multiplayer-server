@@ -3,18 +3,17 @@
 #include <SFML/Network/SocketSelector.hpp>
 #include "EventBus.hpp"
 #include "PacketType.hpp"
-#include "ConnectionStack.hpp"
+#include "ClientStack.hpp"
 #include "PacketProcessor.hpp"
 
 class NetworkServer {
 private:
-	const int port;
-	ConnectionStack& connectionStack;
+	const int localPort;
+	ClientStack& clientStack;
 
-	sf::TcpListener tcpListener;
-	sf::SocketSelector selector;
+	sf::UdpSocket socket;
 public:
-	NetworkServer(ConnectionStack& connections, const int port);
+	NetworkServer(ClientStack& clientStack, int localPort);
 
 	void poll();
 

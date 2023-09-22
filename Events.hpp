@@ -1,38 +1,44 @@
 #pragma once
+#include <utility>
+
 #include "Client.hpp"
 
-struct S2STick {
-	float dt;
-    explicit S2STick(float dt) : dt(dt) {}
-};
-
-struct C2SConnection {
+struct IncomingPacketPreprocess {
+    sf::Packet& p;
     Client::ID clientId;
-    explicit C2SConnection(Client::ID clientId) : clientId(clientId) {}
+
+    IncomingPacketPreprocess(sf::Packet& p, Client::ID clientId)
+        : p(p), clientId(clientId) {}
 };
 
-struct C2SDisconnection {
+struct IncomingClientHandshake {
+    unsigned short clientPort;
+    std::string clientAddress;
+
+    IncomingClientHandshake(std::string clientAddress, unsigned short clientPort)
+        : clientPort(clientPort), clientAddress(std::move(clientAddress)) {}
+};
+
+struct IncomingClientHeartbeat {
     Client::ID clientId;
-    explicit C2SDisconnection(Client::ID clientId) : clientId(clientId) {}
+    explicit IncomingClientHeartbeat(Client::ID clientId) : clientId(clientId) {}
 };
 
-struct C2SHeartbeatPacket {
+struct ClientAccepted {
+    Client::ID assignedId;
+    explicit ClientAccepted(Client::ID assignedId) : assignedId(assignedId) {}
+};
+
+struct ClientRefused {
+
+};
+
+struct ClientLeft {
     Client::ID clientId;
-    explicit C2SHeartbeatPacket(Client::ID clientId) : clientId(clientId) {}
+    explicit ClientLeft(Client::ID clientId) : clientId(clientId) {}
 };
 
-struct S2CPacketPreprocess {
-	Client::ID clientId;
-	sf::Packet& packet;
-
-    S2CPacketPreprocess(Client::ID clientId, sf::Packet& packet)
-    : clientId(clientId), packet(packet) {}
-};
-
-struct C2SPacketPreprocess {
-	Client::ID clientId;
-	sf::Packet& packet;
-
-    C2SPacketPreprocess(Client::ID clientId, sf::Packet& packet)
-        : clientId(clientId), packet(packet) {}
+struct Tick {
+    float dt;
+    explicit Tick(float dt) : dt(dt) {}
 };
