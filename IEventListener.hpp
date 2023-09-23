@@ -10,9 +10,9 @@ public:
 	virtual ~IEventListener() = default;
 
     virtual void handle(Tick e)	{};
-    virtual void handle(ClientLeft e) {};
-    virtual void handle(ClientRefused e) {};
-    virtual void handle(ClientAccepted e) {};
+    virtual void handle(PlayerLeave e) {};
+    virtual void handle(ClientHandshakeRefused e) {};
+    virtual void handle(ClientHandshakeAccepted e) {};
     virtual void handle(IncomingClientHandshake e)	{};
     virtual void handle(IncomingClientHeartbeat e)	{};
     virtual void handle(IncomingPacketPreprocess e)	{};

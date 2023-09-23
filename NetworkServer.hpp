@@ -4,6 +4,7 @@
 #include "EventBus.hpp"
 #include "PacketType.hpp"
 #include "ClientStack.hpp"
+#include "PacketWrapper.hpp"
 #include "PacketProcessor.hpp"
 
 class NetworkServer {
@@ -17,13 +18,11 @@ public:
 
 	void poll();
 
-	void send(Client::ID id, sf::Packet& p);
-	void broadcast(sf::Packet& p);
-	void broadcastExcept(Client::ID id, sf::Packet& p);
-	void disconnectClient(Client::ID id);
+	void send(PacketWrapper& p, Client::ID id);
+	void broadcast(PacketWrapper& p);
+	void broadcastExcept(PacketWrapper& p, Client::ID excludedId);
+    void kickClient(Client::ID id);
 private:
-	void processNewConnections();
 	void processIncomingPackets();
-	void broadcastNewConnection(Client::ID id);
-	void disconnectClient(Client::ID id, bool removeFromConnections);
+	void processHandshake(sf::IpAddress& sourceAddress, unsigned short sourcePort);
 };

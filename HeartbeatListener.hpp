@@ -9,12 +9,12 @@ private:
 	const float MAX_NO_REPLY_TIME = 60;
 private:
 	NetworkServer& server;
-	std::unordered_map<Client::ID, TimeSinceLastBeat> beats;
+	std::unordered_map<Client::ID, TimeSinceLastBeat> heartbeats;
 public:
 	explicit HeartbeatListener(NetworkServer& server) : server(server) {};
 public:
 	void handle(Tick e) override;
-	void handle(ClientLeft e) override;
-	void handle(ClientAccepted e) override;
+	void handle(PlayerLeave e) override;
+	void handle(ClientHandshakeAccepted e) override;
 	void handle(IncomingClientHeartbeat e) override;
 };

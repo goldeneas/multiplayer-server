@@ -24,18 +24,18 @@ struct IncomingClientHeartbeat {
     explicit IncomingClientHeartbeat(Client::ID clientId) : clientId(clientId) {}
 };
 
-struct ClientAccepted {
+struct ClientHandshakeAccepted {
     Client::ID assignedId;
-    explicit ClientAccepted(Client::ID assignedId) : assignedId(assignedId) {}
+    explicit ClientHandshakeAccepted(Client::ID assignedId) : assignedId(assignedId) {}
 };
 
-struct ClientRefused {
+struct ClientHandshakeRefused {
 
 };
 
-struct ClientLeft {
+struct PlayerLeave {
     Client::ID clientId;
-    explicit ClientLeft(Client::ID clientId) : clientId(clientId) {}
+    explicit PlayerLeave(Client::ID clientId) : clientId(clientId) {}
 };
 
 struct Tick {

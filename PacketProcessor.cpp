@@ -1,6 +1,7 @@
 #include "PacketProcessor.hpp"
 #include <spdlog/spdlog.h>
 
+// todo: maybe rename packet translator
 PacketType PacketProcessor::process(sf::Packet& packet, Client::ID id) {
 	PacketType type;
 	packet >> type;
