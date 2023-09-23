@@ -17,11 +17,11 @@ public:
 	NetworkServer(ClientStack& clientStack, int localPort);
 
 	void poll();
-
 	void send(PacketWrapper& p, Client::ID id);
+    void send(PacketWrapper& p, sf::IpAddress sourceAddress, unsigned short sourcePort);
 	void broadcast(PacketWrapper& p);
 	void broadcastExcept(PacketWrapper& p, Client::ID excludedId);
     void kickClient(Client::ID id);
 private:
-	void processHandshake(sf::IpAddress& sourceAddress, unsigned short sourcePort);
+	void processHandshake(sf::IpAddress sourceAddress, unsigned short sourcePort);
 };

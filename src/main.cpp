@@ -2,7 +2,7 @@
 #include "EventBus.hpp"
 #include "ClientStack.hpp"
 #include "NetworkServer.hpp"
-#include "listeners/HeartbeatListener.hpp"
+#include "listeners/ClientHeartbeat.hpp"
 
 int main() {
 	ClientStack connectionStack(20);
@@ -10,7 +10,7 @@ int main() {
 
 	spdlog::set_level(spdlog::level::debug);
 
-	EventBus::registerListener<HeartbeatListener>(server);
+	EventBus::registerListener<ClientHeartbeat>(server);
 
 	sf::Clock clock;
 	while(true) {

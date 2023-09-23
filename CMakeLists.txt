@@ -32,8 +32,8 @@ add_executable(multiplayer_server
         src/EventBus.cpp
         src/EventBus.hpp
         src/Events.hpp
-        src/listeners/HeartbeatListener.cpp
-        src/listeners/HeartbeatListener.hpp
+        src/listeners/ClientHeartbeat.cpp
+        src/listeners/ClientHeartbeat.hpp
         src/IEventListener.hpp
         src/main.cpp
         src/NetworkServer.cpp

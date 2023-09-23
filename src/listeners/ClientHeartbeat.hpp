@@ -3,7 +3,7 @@
 #include "NetworkServer.hpp"
 #include "IEventListener.hpp"
 
-class HeartbeatListener : public IEventListener {
+class ClientHeartbeat : public IEventListener {
 private:
 	using TimeSinceLastBeat = float;
 	const float MAX_NO_REPLY_TIME = 60;
@@ -11,7 +11,7 @@ private:
 	NetworkServer& server;
 	std::unordered_map<Client::ID, TimeSinceLastBeat> heartbeats;
 public:
-	explicit HeartbeatListener(NetworkServer& server) : server(server) {};
+	explicit ClientHeartbeat(NetworkServer& server) : server(server) {};
 public:
 	void handle(Tick e) override;
 	void handle(PlayerLeave e) override;

@@ -44,10 +44,15 @@ void NetworkServer::poll() {
                   sourceAddress.toString(), sourcePort, id, static_cast<int>(t));
 }
 
-void NetworkServer::processHandshake(sf::IpAddress& sourceAddress, unsigned short sourcePort) {
+void NetworkServer::processHandshake(sf::IpAddress sourceAddress, unsigned short sourcePort) {
     if(clientStack.size() >= clientStack.maxSize()) {
         EventBus::emit<ClientHandshakeRefused>();
         spdlog::info("Rejected handshake from {}:{}. Maximum amount of clients reached");
+
+        S2CHandshake hs;
+        hs.isHandshakeSuccessful = false;
+        send(hs, sourceAddress, sourcePort);
+
         return;
     }
 
@@ -58,6 +63,11 @@ void NetworkServer::processHandshake(sf::IpAddress& sourceAddress, unsigned shor
     EventBus::emit<ClientHandshakeAccepted>(id);
     spdlog::info("Accepted handshake coming from {}:{}. [ASSIGNED-ID: {}]",
                  sourceAddress.toString(), sourcePort, id);
+
+    S2CHandshake hs;
+    hs.assignedId = id;
+    hs.isHandshakeSuccessful = true;
+    send(hs, sourceAddress, sourcePort);
 }
 
 //void NetworkServer::processNewConnections() {
@@ -107,19 +117,20 @@ void NetworkServer::processHandshake(sf::IpAddress& sourceAddress, unsigned shor
 //	}
 //}
 
-void NetworkServer::send(PacketWrapper& p, Client::ID id) {
-    Client& client = clientStack.getClient(id);
-
+void NetworkServer::send(PacketWrapper& p, sf::IpAddress sourceAddress, unsigned short sourcePort) {
     PacketType t = p.type;
     sf::Packet packet = p.build();
-    unsigned short port = client.getPort();
-    sf::IpAddress address = client.getAddress();
 
-    sf::Socket::Status status = socket.send(packet, address, port);
+    sf::Socket::Status status = socket.send(packet, sourceAddress, sourcePort);
     if(status != sf::Socket::Done) {
         spdlog::error("Could not send packet to client at {}:{}. [TYPE: {}]",
-                      address.toString(), port, static_cast<int>(t));
+                      sourceAddress.toString(), sourcePort, static_cast<int>(t));
     }
+}
+
+void NetworkServer::send(PacketWrapper& p, Client::ID id) {
+    Client& client = clientStack.getClient(id);
+    send(p, client.getAddress(), client.getPort());
 }
 
 void NetworkServer::broadcast(PacketWrapper& p) {

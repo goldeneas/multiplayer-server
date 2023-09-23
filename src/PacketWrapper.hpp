@@ -8,6 +8,11 @@ struct PacketWrapper {
     sf::Packet rawPacket{};
     PacketType type = PacketType::UNDEFINED;
 
+    // TODO: fix this here
+    // we want to put whatever type the packet is in the raw packet
+    // maybe have the user put it as a parameter in the build function?
+    // this way we don't have to copy and paste type each time we want to use it
+    PacketWrapper() { rawPacket << type; }
     virtual sf::Packet build() = 0;
 };
 

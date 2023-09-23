@@ -11,13 +11,13 @@ public:
 	explicit ClientStack(size_t maxSize);
 
 	size_t size() { return clients.size(); }
-	size_t maxSize() { return maxClients; }
+	[[nodiscard]] size_t maxSize() const { return maxClients; }
 
 	void remove(Client::ID id);
 	void add(Client::Pointer client);
 
 	auto& getAll() { return clients; }
 	Client& getClient(Client::ID id);
-    Client& getClient(sf::IpAddress& address, unsigned short port);
-    bool contains(sf::IpAddress& address, unsigned short port);
+    Client& getClient(sf::IpAddress address, unsigned short port);
+    bool contains(sf::IpAddress address, unsigned short port);
 };
