@@ -16,6 +16,7 @@ PacketType PacketProcessor::process(sf::Packet& packet, Client::ID id) {
             packet >> clientPort;
 
             EventBus::emit<IncomingClientHandshake>(clientAddress, clientPort);
+            break;
         }
 
 		default:

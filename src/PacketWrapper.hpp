@@ -8,11 +8,6 @@ struct PacketWrapper {
     sf::Packet rawPacket{};
     PacketType type = PacketType::UNDEFINED;
 
-    // TODO: fix this here
-    // we want to put whatever type the packet is in the raw packet
-    // maybe have the user put it as a parameter in the build function?
-    // this way we don't have to copy and paste type each time we want to use it
-    PacketWrapper() { rawPacket << type; }
     virtual sf::Packet build() = 0;
 };
 
@@ -23,6 +18,7 @@ struct C2SHandshake : public PacketWrapper {
     std::string clientAddress{};
 
     sf::Packet build() override {
+        rawPacket << type;
         rawPacket << clientAddress;
         rawPacket << clientPort;
 
@@ -37,8 +33,10 @@ struct S2CHandshake : public PacketWrapper {
     bool isHandshakeSuccessful = false;
 
     sf::Packet build() override {
+        rawPacket << type;
         rawPacket << isHandshakeSuccessful;
         rawPacket << assignedId;
+
         return rawPacket;
     }
 };
@@ -49,7 +47,9 @@ struct S2CPlayerJoin : public PacketWrapper {
     Client::ID id = -1;
 
     sf::Packet build() override {
+        rawPacket << type;
         rawPacket << id;
+
         return rawPacket;
     }
 };
@@ -60,7 +60,9 @@ struct S2CPlayerLeave : public PacketWrapper {
     Client::ID id = -1;
 
     sf::Packet build() override {
+        rawPacket << type;
         rawPacket << id;
+
         return rawPacket;
     }
 };
