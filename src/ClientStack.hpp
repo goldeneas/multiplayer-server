@@ -19,5 +19,5 @@ public:
 	auto& getAll() { return clients; }
 	Client& getClient(Client::ID id);
     Client& getClient(sf::IpAddress& address, unsigned short port);
-    bool containsClient(sf::IpAddress& address, unsigned short port);
+    bool contains(sf::IpAddress& address, unsigned short port);
 };

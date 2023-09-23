@@ -23,6 +23,5 @@ public:
 	void broadcastExcept(PacketWrapper& p, Client::ID excludedId);
     void kickClient(Client::ID id);
 private:
-	void processIncomingPackets();
 	void processHandshake(sf::IpAddress& sourceAddress, unsigned short sourcePort);
 };

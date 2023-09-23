@@ -15,10 +15,6 @@ NetworkServer::NetworkServer(ClientStack& clientStack, int localPort)
 }
 
 void NetworkServer::poll() {
-    processIncomingPackets();
-}
-
-void NetworkServer::processIncomingPackets() {
     sf::Packet p;
     sf::IpAddress sourceAddress;
     unsigned short sourcePort;
@@ -33,7 +29,7 @@ void NetworkServer::processIncomingPackets() {
     if(status != sf::Socket::Done)
         return;
 
-    if(!clientStack.containsClient(sourceAddress, sourcePort)) {
+    if(!clientStack.contains(sourceAddress, sourcePort)) {
         processHandshake(sourceAddress, sourcePort);
         return;
     }

@@ -1,8 +1,8 @@
 #include <spdlog/spdlog.h>
 #include "EventBus.hpp"
-#include "HeartbeatListener.hpp"
-#include "NetworkServer.hpp"
 #include "ClientStack.hpp"
+#include "NetworkServer.hpp"
+#include "listeners/HeartbeatListener.hpp"
 
 int main() {
 	ClientStack connectionStack(20);

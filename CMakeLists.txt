@@ -13,6 +13,7 @@ find_library(SPDLOG_LIBRARY spdlog)
 find_library(SFML_LIBRARY sfml)
 
 include_directories(
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
         /opt/homebrew/Cellar/sfml/2.6.0/include
         /opt/homebrew/Cellar/spdlog/1.12.0/include
         /opt/homebrew/Cellar/fmt/10.1.1/include
@@ -25,23 +26,23 @@ link_directories(
 )
 
 add_executable(multiplayer_server
-        Client.hpp
-        ClientStack.cpp
-        ClientStack.hpp
-        EventBus.cpp
-        EventBus.hpp
-        Events.hpp
-        HeartbeatListener.cpp
-        HeartbeatListener.hpp
-        IEventListener.hpp
-        main.cpp
-        NetworkServer.cpp
-        NetworkServer.hpp
-        PacketProcessor.cpp
-        PacketProcessor.hpp
-        PacketType.cpp
-        PacketType.hpp
-        PacketWrapper.hpp
+        src/Client.hpp
+        src/ClientStack.cpp
+        src/ClientStack.hpp
+        src/EventBus.cpp
+        src/EventBus.hpp
+        src/Events.hpp
+        src/listeners/HeartbeatListener.cpp
+        src/listeners/HeartbeatListener.hpp
+        src/IEventListener.hpp
+        src/main.cpp
+        src/NetworkServer.cpp
+        src/NetworkServer.hpp
+        src/PacketProcessor.cpp
+        src/PacketProcessor.hpp
+        src/PacketType.cpp
+        src/PacketType.hpp
+        src/PacketWrapper.hpp
 )
 
 target_link_libraries(multiplayer_server

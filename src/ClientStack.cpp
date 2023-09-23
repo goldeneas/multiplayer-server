@@ -27,20 +27,20 @@ void ClientStack::remove(Client::ID id) {
 	std::erase_if(clients, [id](auto& s) { return id == s->getId(); });
 }
 
-Client& ClientStack::getClient(Client::ID id) {
-	for(auto& client : clients)
-		if(client->getId() == id)
-			return *client;
-
-	spdlog::error("Client with ID: {} was not found", id);
-}
-
-bool ClientStack::containsClient(sf::IpAddress &address, unsigned short port) {
+bool ClientStack::contains(sf::IpAddress &address, unsigned short port) {
     for(auto& client : clients)
         if (client->getPort() == port && client->getAddress() == address)
             return true;
 
     return false;
+}
+
+Client& ClientStack::getClient(Client::ID id) {
+    for(auto& client : clients)
+        if(client->getId() == id)
+            return *client;
+
+    spdlog::error("Client with ID: {} was not found", id);
 }
 
 Client& ClientStack::getClient(sf::IpAddress& address, unsigned short port) {
