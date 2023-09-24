@@ -5,7 +5,7 @@
 
 class Client {
 public:
-	using ID = sf::Uint32;
+	using ID = sf::Int32;
 	using Pointer = std::unique_ptr<Client>;
 private:
 	static inline ID nextFreeId = 0;

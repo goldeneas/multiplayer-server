@@ -6,7 +6,7 @@
 #include "PacketType.hpp"
 #include "Client.hpp"
 
-// candidate to sharing
 namespace PacketProcessor {
 	PacketType process(sf::Packet& packet, Client::ID id);
+    PacketType getType(sf::Packet packet);
 };

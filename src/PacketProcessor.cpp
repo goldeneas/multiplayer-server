@@ -6,8 +6,7 @@ PacketType PacketProcessor::process(sf::Packet& packet, Client::ID id) {
 	PacketType type;
 	packet >> type;
 
-	switch(type)
-	{
+	switch(type) {
         case PacketType::C2S_HANDSHAKE: {
             unsigned short clientPort;
             std::string clientAddress;
@@ -19,10 +18,21 @@ PacketType PacketProcessor::process(sf::Packet& packet, Client::ID id) {
             break;
         }
 
+        case PacketType::C2S_HEARTBEAT: {
+            EventBus::emit<IncomingClientHeartbeat>(id);
+            break;
+        }
+
 		default:
 			spdlog::warn("Tried handling unregistered packet type {}.", static_cast<int>(type));
 			break;
 	}
 
 	return type;
+}
+
+PacketType PacketProcessor::getType(sf::Packet packet) {
+    PacketType t;
+    packet >> t;
+    return t;
 }

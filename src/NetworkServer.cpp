@@ -29,19 +29,23 @@ void NetworkServer::poll() {
     if(status != sf::Socket::Done)
         return;
 
-    if(!clientStack.contains(sourceAddress, sourcePort)) {
-        processHandshake(sourceAddress, sourcePort);
+    if(clientStack.contains(sourceAddress, sourcePort)) {
+        Client& client = clientStack.getClient(sourceAddress, sourcePort);
+        Client::ID id = client.getId();
+
+        EventBus::emit<IncomingPacketPreprocess>(p, id);
+        PacketType t = PacketProcessor::process(p, id);
+
+        spdlog::debug("A client [{}:{}; ID: {}] has sent a packet [TYPE: {}]",
+                      sourceAddress.toString(), sourcePort, id, static_cast<int>(t));
         return;
     }
 
-    Client& client = clientStack.getClient(sourceAddress, sourcePort);
-    Client::ID id = client.getId();
-
-    EventBus::emit<IncomingPacketPreprocess>(p, id);
-    PacketType t = PacketProcessor::process(p, id);
-
-    spdlog::debug("A client [{}:{}; {}] has sent a packet [TYPE: {}]",
-                  sourceAddress.toString(), sourcePort, id, static_cast<int>(t));
+    if(PacketProcessor::getType(p) == PacketType::C2S_HANDSHAKE)
+        processHandshake(sourceAddress, sourcePort);
+    else
+        spdlog::warn("A client [{}:{}] tried communicating with us, but hasn't sent an handshake yet",
+                     sourceAddress.toString(), sourcePort);
 }
 
 void NetworkServer::processHandshake(sf::IpAddress sourceAddress, unsigned short sourcePort) {
@@ -70,54 +74,7 @@ void NetworkServer::processHandshake(sf::IpAddress sourceAddress, unsigned short
     send(hs, sourceAddress, sourcePort);
 }
 
-//void NetworkServer::processNewConnections() {
-//	if(!selector.isReady(tcpListener))
-//		return;
-//
-//	if(connectionStack.size() >= connectionStack.maxSize()) {
-//		spdlog::warn("Maximum number of clients has been reached. Closing new connection");
-//		return;
-//	}
-//
-//	Client::Pointer connection = std::make_unique<Client>();
-//	Client::ID clientId = connection->getId();
-//	sf::TcpSocket& socket = connection->getSocket();
-//
-//	if(tcpListener.accept(socket) != sf::Socket::Done) {
-//		spdlog::error("Something went wrong while trying to accept new connection!");
-//		return;
-//	}
-//
-//	// handle connection
-//	selector.add(socket);
-//	connectionStack.add(std::move(connection));
-//	EventBus::emit<C2SConnection>(clientId);
-//
-//	spdlog::info("A client [ID: {}] has connected successfully", clientId);
-//
-//	// broadcast new connection
-//	spdlog::debug("Broadcasting new connection [ID: {}] to connected clients", clientId);
-//	broadcastNewConnection(clientId);
-//}
-
-//void NetworkServer::broadcastNewConnection(Client::ID id) {
-//	// broadcast new connection to others
-//	sf::Packet p = PacketBuilder::build(PacketType::S2C_NEW_CLIENT, id);
-//	broadcastExcept(id, p);
-//
-//	// tell new client who's connected
-//	for(auto& connection : connectionStack.getAll()) {
-//		Client::ID otherId = connection->getId();
-//
-//		if(id == otherId)
-//			continue;
-//
-//		sf::Packet p = PacketBuilder::build(PacketType::S2C_NEW_CLIENT, otherId);
-//		send(id, p);
-//	}
-//}
-
-void NetworkServer::send(PacketWrapper& p, sf::IpAddress sourceAddress, unsigned short sourcePort) {
+void NetworkServer::send(IPacketWrapper& p, sf::IpAddress sourceAddress, unsigned short sourcePort) {
     PacketType t = p.type;
     sf::Packet packet = p.build();
 
@@ -128,17 +85,17 @@ void NetworkServer::send(PacketWrapper& p, sf::IpAddress sourceAddress, unsigned
     }
 }
 
-void NetworkServer::send(PacketWrapper& p, Client::ID id) {
+void NetworkServer::send(IPacketWrapper& p, Client::ID id) {
     Client& client = clientStack.getClient(id);
     send(p, client.getAddress(), client.getPort());
 }
 
-void NetworkServer::broadcast(PacketWrapper& p) {
+void NetworkServer::broadcast(IPacketWrapper& p) {
 	for(Client::Pointer& c : clientStack.getAll())
 		send(p, c->getId());
 }
 
-void NetworkServer::broadcastExcept(PacketWrapper& p, Client::ID excludedId) {
+void NetworkServer::broadcastExcept(IPacketWrapper& p, Client::ID excludedId) {
 	for(Client::Pointer& c : clientStack.getAll()) {
         Client::ID currentId = c->getId();
 
@@ -157,18 +114,3 @@ void NetworkServer::kickClient(Client::ID id) {
     EventBus::emit<PlayerLeave>(id);
     clientStack.remove(id);
 }
-
-//void NetworkServer::disconnectClient(Client::ID id) {
-//	disconnectClient(id, true);
-//}
-//
-//void NetworkServer::disconnectClient(Client::ID id, bool removeFromConnections) {
-//	auto& connection = connectionStack.getClient(id);
-//	auto& socket = connection.getSocket();
-//
-//	EventBus::emit<C2SDisconnection>(id);
-//	selector.remove(socket);
-//
-//	if(removeFromConnections)
-//		connectionStack.remove(id);
-//}

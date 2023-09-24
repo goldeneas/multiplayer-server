@@ -42,7 +42,7 @@ add_executable(multiplayer_server
         src/PacketProcessor.hpp
         src/PacketType.cpp
         src/PacketType.hpp
-        src/PacketWrapper.hpp
+        src/IPacketWrapper.hpp
 )
 
 target_link_libraries(multiplayer_server

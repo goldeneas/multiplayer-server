@@ -4,14 +4,14 @@
 
 // TODO: add a way to recognise clients sending packets
 
-struct PacketWrapper {
+struct IPacketWrapper {
     sf::Packet rawPacket{};
     PacketType type = PacketType::UNDEFINED;
 
     virtual sf::Packet build() = 0;
 };
 
-struct C2SHandshake : public PacketWrapper {
+struct C2SHandshake : public IPacketWrapper {
     PacketType type = PacketType::C2S_HANDSHAKE;
 
     unsigned short clientPort{};
@@ -26,7 +26,7 @@ struct C2SHandshake : public PacketWrapper {
     }
 };
 
-struct S2CHandshake : public PacketWrapper {
+struct S2CHandshake : public IPacketWrapper {
     PacketType type = PacketType::S2C_HANDSHAKE;
 
     Client::ID assignedId = -1;
@@ -41,7 +41,7 @@ struct S2CHandshake : public PacketWrapper {
     }
 };
 
-struct S2CPlayerJoin : public PacketWrapper {
+struct S2CPlayerJoin : public IPacketWrapper {
     PacketType type = PacketType::S2C_PLAYERJOIN;
 
     Client::ID id = -1;
@@ -54,7 +54,7 @@ struct S2CPlayerJoin : public PacketWrapper {
     }
 };
 
-struct S2CPlayerLeave : public PacketWrapper {
+struct S2CPlayerLeave : public IPacketWrapper {
     PacketType type = PacketType::S2C_PLAYERLEAVE;
 
     Client::ID id = -1;
@@ -63,6 +63,24 @@ struct S2CPlayerLeave : public PacketWrapper {
         rawPacket << type;
         rawPacket << id;
 
+        return rawPacket;
+    }
+};
+
+struct S2CHeartbeat : public IPacketWrapper {
+    PacketType type = PacketType::S2C_HEARTBEAT;
+
+    sf::Packet build() override {
+        rawPacket << type;
+        return rawPacket;
+    }
+};
+
+struct C2SHeartbeat : public IPacketWrapper {
+    PacketType type = PacketType::C2S_HEARTBEAT;
+
+    sf::Packet build() override {
+        rawPacket << type;
         return rawPacket;
     }
 };

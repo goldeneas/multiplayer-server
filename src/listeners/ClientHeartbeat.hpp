@@ -5,11 +5,14 @@
 
 class ClientHeartbeat : public IEventListener {
 private:
+    using Attempts = int;
 	using TimeSinceLastBeat = float;
-	const float MAX_NO_REPLY_TIME = 60;
+
+    const int MAX_ATTEMPTS = 5;
+    const float HEARTBEAT_INTERVAL = 5;
 private:
 	NetworkServer& server;
-	std::unordered_map<Client::ID, TimeSinceLastBeat> heartbeats;
+	std::unordered_map<Client::ID, std::pair<Attempts , TimeSinceLastBeat>> heartbeats;
 public:
 	explicit ClientHeartbeat(NetworkServer& server) : server(server) {};
 public:
